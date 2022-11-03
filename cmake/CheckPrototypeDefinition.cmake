@@ -56,6 +56,12 @@ function(CHECK_PROTOTYPE_DEFINITION _FUNCTION _PROTOTYPE _RETURN _HEADER _VARIAB
 
         file(READ ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/CMakeTmp/CheckPrototypeDefinition.c _SOURCE)
 
+        if (DEFINED CMAKE_TRY_COMPILE_TARGET_TYPE AND
+            NOT "${CMAKE_TRY_COMPILE_TARGET_TYPE}" STREQUAL "EXECUTABLE")
+            set(CMAKE_TRY_COMPILE_TARGET_TYPE_SAVE "${CMAKE_TRY_COMPILE_TARGET_TYPE}")
+            set(CMAKE_TRY_COMPILE_TARGET_TYPE "EXECUTABLE")
+        endif()
+
         try_compile(${_VARIABLE}
           ${CMAKE_BINARY_DIR}
           ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/CMakeTmp/CheckPrototypeDefinition.c
@@ -78,5 +84,10 @@ function(CHECK_PROTOTYPE_DEFINITION _FUNCTION _PROTOTYPE _RETURN _HEADER _VARIAB
                 "Determining if the prototype ${_FUNCTION} exists for ${_VARIABLE} failed with the following output:\n"
                 "${OUTPUT}\n\n${_SOURCE}\n\n")
         endif (${_VARIABLE})
+
+        if (DEFINED CMAKE_TRY_COMPILE_TARGET_TYPE_SAVE)
+            set(CMAKE_TRY_COMPILE_TARGET_TYPE "${CMAKE_TRY_COMPILE_TARGET_TYPE_SAVE}")
+            unset(CMAKE_TRY_COMPILE_TARGET_TYPE_SAVE)
+        endif()
     endif()
 endfunction(CHECK_PROTOTYPE_DEFINITION)
